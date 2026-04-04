@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ज्ञानसिंधू क्लासेस - ज्ञानातून यशाकडे</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --brand-blue: #0c4a6e; /* Deep Navy from logo */
+            --brand-gold: #f59e0b; /* Golden Yellow from star/sun */
+            --brand-light-blue: #38bdf8; /* Light blue arc */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #334155;
+            scroll-behavior: smooth;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--brand-blue) 0%, #075985 100%);
+        }
+
+        .gold-text { color: var(--brand-gold); }
+        .blue-bg { background-color: var(--brand-blue); }
+        .gold-bg { background-color: var(--brand-gold); }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Navigation -->
+    <nav class="sticky-nav bg-white/90 border-b border-slate-200 py-3 shadow-sm">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- Logo -->
+                <div class="w-12 h-12 flex items-center justify-center">
+                    <img src="Logo.jpg" alt="ज्ञानसिंधू क्लासेस लोगो" class="w-full h-full object-contain rounded-full">
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold leading-tight" style="color: var(--brand-blue);">ज्ञानसिंधू <span class="gold-text">क्लासेस</span></h1>
+                    <p class="text-[10px] md:text-xs tracking-widest font-semibold text-slate-500 uppercase">ज्ञानातून यशाकडे</p>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-6 font-medium text-slate-600">
+                <a href="#about" class="hover:text-sky-700 transition">आमच्याबद्दल</a>
+                <a href="#courses" class="hover:text-sky-700 transition">कोर्सेस</a>
+                <a href="#features" class="hover:text-sky-700 transition">वैशिष्ट्ये</a>
+                <a href="#contact" class="hover:text-sky-700 transition">संपर्क</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="tel:9175432344" class="blue-bg text-white px-5 py-2 rounded-full font-semibold text-sm hover:opacity-90 transition shadow-lg hidden sm:flex items-center gap-2">
+                    <i class="fas fa-phone"></i> कॉल करा
+                </a>
+                <!-- Mobile hamburger -->
+                <button id="hamburger" onclick="toggleMobileMenu()" class="md:hidden text-slate-700 text-2xl focus:outline-none" aria-label="मेनू">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 py-4 flex flex-col gap-4 font-medium text-slate-600">
+            <a href="#about" onclick="toggleMobileMenu()" class="hover:text-sky-700 transition">आमच्याबद्दल</a>
+            <a href="#courses" onclick="toggleMobileMenu()" class="hover:text-sky-700 transition">कोर्सेस</a>
+            <a href="#features" onclick="toggleMobileMenu()" class="hover:text-sky-700 transition">वैशिष्ट्ये</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="hover:text-sky-700 transition">संपर्क</a>
+            <a href="tel:9175432344" class="blue-bg text-white px-5 py-2 rounded-full font-semibold text-sm text-center hover:opacity-90 transition">
+                <i class="fas fa-phone mr-1"></i> कॉल करा
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="gradient-bg text-white py-14 md:py-20 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-sky-400/10 rounded-full -ml-48 -mb-48"></div>
+        
+        <div class="container mx-auto px-4 relative flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div class="md:w-3/5 text-center md:text-left pt-2">
+                <span class="inline-block gold-bg text-blue-900 px-4 py-1 rounded-full text-xs font-bold uppercase mb-5 shadow-lg">प्रवेश सुरु आहे! आजच प्रवेश करा</span>
+                <h2 class="text-3xl md:text-6xl font-bold mb-4 leading-tight">तुमच्या उज्वल भविष्यासाठी <br><span class="gold-text">योग्य पाऊल!</span></h2>
+                <p class="text-base md:text-lg text-sky-100 mb-6 max-w-xl">ज्ञानसिंधू क्लासेसमध्ये आम्ही प्रत्येक विद्यार्थ्याच्या प्रगतीसाठी आणि सर्वांगीण विकासासाठी वचनबद्ध आहोत. यशाची खात्री, फक्त आमच्याकडे!</p>
+                
+                <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                    <button onclick="togglePopup()" class="bg-white text-sky-900 px-8 py-3 rounded-lg font-bold hover:bg-sky-50 transition shadow-xl">आत्ताच नाव नोंदवा</button>
+                    <div class="flex items-center gap-2 text-white/80 font-medium">
+                        <i class="fas fa-check-circle gold-text text-xl"></i>
+                        <span>इ. १० वी १००% निकाल हमी</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="md:w-2/5 flex justify-center">
+                <div class="relative">
+                    <div class="absolute inset-0 gold-bg blur-3xl opacity-20 rounded-full"></div>
+                    <!-- Badge -->
+                    <div class="absolute -top-6 -right-6 z-20 pulse gold-bg text-blue-900 w-24 h-24 rounded-full flex flex-col items-center justify-center font-bold shadow-2xl border-4 border-white">
+                        <span class="text-2xl leading-none">20%</span>
+                        <span class="text-sm">सूट</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop" alt="Students" class="rounded-2xl shadow-2xl border-8 border-white/10 w-full max-w-xs md:max-w-sm object-cover h-64 md:h-[400px]">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="py-12 md:py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h3 class="text-3xl font-bold mb-3" style="color: var(--brand-blue);">आमच्याबद्दल</h3>
+                <div class="w-20 h-1 gold-bg mx-auto rounded-full mb-6"></div>
+                <div class="grid grid-cols-3 gap-4 md:gap-8">
+                    <div class="p-4 md:p-6 rounded-2xl bg-sky-50 border border-sky-100">
+                        <div class="text-3xl md:text-4xl font-bold gold-text mb-2">१०+</div>
+                        <p class="text-slate-600 font-medium text-sm md:text-base">वर्षांचा अनुभव</p>
+                    </div>
+                    <div class="p-4 md:p-6 rounded-2xl bg-sky-50 border border-sky-100">
+                        <div class="text-3xl md:text-4xl font-bold gold-text mb-2">५००+</div>
+                        <p class="text-slate-600 font-medium text-sm md:text-base">यशस्वी विद्यार्थी</p>
+                    </div>
+                    <div class="p-4 md:p-6 rounded-2xl bg-sky-50 border border-sky-100">
+                        <div class="text-3xl md:text-4xl font-bold gold-text mb-2">१००%</div>
+                        <p class="text-slate-600 font-medium text-sm md:text-base">१० वी निकाल</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-slate-600 text-base md:text-lg leading-relaxed">नेरळ परिसरातील एक अग्रेसर शैक्षणिक संस्था. आम्ही प्रत्येक विद्यार्थ्याच्या क्षमतेनुसार वैयक्तिक मार्गदर्शन देतो आणि त्यांना यशाच्या मार्गावर घेऊन जातो.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-12 md:py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl font-bold mb-3" style="color: var(--brand-blue);">उपलब्ध क्लासेस</h3>
+                <div class="w-20 h-1 gold-bg mx-auto rounded-full"></div>
+                <p class="mt-4 text-slate-600">मराठी, सेमी आणि इंग्रजी माध्यमांसाठी उत्तम मार्गदर्शन</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Secondary School -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 card-hover text-center">
+                    <div class="w-16 h-16 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-book-reader text-2xl text-sky-600"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">माध्यमिक विभाग</h4>
+                    <p class="text-slate-500 mb-6 font-semibold text-lg">इ. ८ वी ते १० वी</p>
+                    <ul class="text-slate-600 space-y-2 mb-8 text-sm">
+                        <li><i class="fas fa-check gold-text mr-2"></i>सर्व विषयांचे मार्गदर्शन</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>पायाभूत संकल्पना स्पष्ट</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>१० वी स्पेशल बॅच</li>
+                    </ul>
+                    <button onclick="togglePopup()" class="blue-bg text-white px-6 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition">अधिक माहिती</button>
+                </div>
+
+                <!-- Junior College Science -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border-2 border-amber-200 card-hover text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 gold-bg text-blue-900 px-3 py-1 text-[10px] font-bold uppercase">Popular</div>
+                    <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-atom text-2xl text-amber-600"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">सायन्स विभाग</h4>
+                    <p class="text-slate-500 mb-6 font-semibold text-lg">इ. ११ वी, १२ वी</p>
+                    <ul class="text-slate-600 space-y-2 mb-8 text-sm">
+                        <li><i class="fas fa-check gold-text mr-2"></i>फिजिक्स, केमिस्ट्री, मॅथ्स, बायो</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>प्रॅक्टिकल ओरिएंटेड लर्निंग</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>बोर्ड परीक्षा तयारी</li>
+                    </ul>
+                    <button onclick="togglePopup()" class="blue-bg text-white px-6 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition">अधिक माहिती</button>
+                </div>
+
+                <!-- Commerce & Arts -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 card-hover text-center">
+                    <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">कॉमर्स व आर्ट्स</h4>
+                    <p class="text-slate-500 mb-6 font-semibold text-lg">इ. ११ वी, १२ वी</p>
+                    <ul class="text-slate-600 space-y-2 mb-8 text-sm">
+                        <li><i class="fas fa-check gold-text mr-2"></i>तज्ज्ञ अनुभवी शिक्षक</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>करिअर मार्गदर्शन</li>
+                        <li><i class="fas fa-check gold-text mr-2"></i>नियमित सराव</li>
+                    </ul>
+                    <button onclick="togglePopup()" class="blue-bg text-white px-6 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition">अधिक माहिती</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-12 md:py-16 bg-slate-100">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-10 md:gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-6 leading-snug" style="color: var(--brand-blue);">आमची खास वैशिष्ट्ये - <br><span class="gold-text">विद्यार्थ्यांचे उज्ज्वल भविष्य!</span></h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">मर्यादित विद्यार्थी</h5>
+                                <p class="text-xs text-slate-500">प्रत्येक तुकडीत मर्यादित विद्यार्थी संख्या</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">अनुभवी शिक्षक</h5>
+                                <p class="text-xs text-slate-500">प्रशिक्षित व अनुभवी शिक्षकवृंद</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">प्रत्येक विषयाच्या नोट्स</h5>
+                                <p class="text-xs text-slate-500">अभ्यासपूर्ण आणि सोप्या नोट्स</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">वैयक्तिक लक्ष</h5>
+                                <p class="text-xs text-slate-500">वैयक्तिक लक्ष व योग्य मार्गदर्शन</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">साप्ताहिक चाचणी</h5>
+                                <p class="text-xs text-slate-500">नियमितपणे साप्ताहिक परीक्षा</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 blue-bg text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm mb-1">पालक-शिक्षक सभा</h5>
+                                <p class="text-xs text-slate-500">दर महिन्याला प्रगतीचा आढावा</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-5 bg-white rounded-xl border-l-4 border-amber-500 shadow-sm">
+                        <p class="italic text-slate-600 font-medium leading-relaxed">"१० वी व १२ वीच्या विद्यार्थ्यांसाठी जादा तास घेऊन आम्ही परीक्षेची परिपूर्ण तयारी करून घेतो."</p>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2">
+                    <div class="bg-white p-4 rounded-3xl shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1470&auto=format&fit=crop" alt="Learning" class="rounded-2xl w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-12 md:py-16 blue-bg text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-2xl md:text-3xl font-bold mb-4">मर्यादित ऑफर: फी मध्ये २०% सूट!</h3>
+            <p class="text-sky-100 mb-6 max-w-2xl mx-auto">आजच प्रवेश घ्या आणि या सवलतीचा लाभ मिळवा. आपल्या उज्वल करिअरची सुरुवात आमच्यासोबत करा.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="tel:9175432344" class="gold-bg text-blue-900 px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition text-center">नाव नोंदवण्यासाठी कॉल करा</a>
+                <a href="https://wa.me/919175432344" class="bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp"></i> व्हॉट्सॲप मेसेज
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <footer id="contact" class="pt-12 md:pt-16 pb-8 bg-slate-900 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-10">
+                <div>
+                    <h4 class="text-xl font-bold mb-4">ज्ञानसिंधू <span class="gold-text">क्लासेस</span></h4>
+                    <p class="text-slate-400 mb-4">नेरळ परिसरातील एक अग्रेसर शैक्षणिक संस्था, जिथे गुणवत्ता आणि विश्वासार्हता यांचा संगम होतो.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-600 transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="text-lg font-bold mb-4 pb-2 border-b-2 border-sky-800 inline-block">संपर्क पत्ता</h5>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 text-slate-400">
+                            <i class="fas fa-map-marker-alt mt-1 gold-text"></i>
+                            <p>दुसरा मजला स्वास्तिक गोल्ड, अंबिका नाका,<br>नेरळ बाजारपेठ, नेरळ ४१०१०१.</p>
+                        </div>
+                        <div class="flex gap-3 text-slate-400">
+                            <i class="fas fa-phone-alt mt-1 gold-text flex-shrink-0"></i>
+                            <p class="break-all">9175432344 / 8408994618 / 7722055914</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="text-lg font-bold mb-4 pb-2 border-b-2 border-sky-800 inline-block">वेळ</h5>
+                    <p class="text-slate-400 mb-2">सोमवार ते शनिवार</p>
+                    <p class="text-white font-bold mb-4">सकाळी ७:०० ते रात्री ८:००</p>
+                    <p class="text-slate-400 text-sm italic">निश्चित यशासाठी आजच भेट द्या!</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
+                <p>&copy; 2024 ज्ञानसिंधू क्लासेस, नेरळ. सर्व हक्क राखीव.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Contact Form / Popup Logic -->
+    <div id="contact-popup" class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 relative my-auto">
+            <button onclick="togglePopup()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-2xl font-bold mb-2 text-slate-800">प्रवेश चौकशी</h3>
+            <p class="text-slate-500 text-sm mb-6">माहिती भरा — आम्ही व्हॉट्सॲपवर संपर्क करू.</p>
+            
+            <form class="space-y-4" onsubmit="return false;">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">विद्यार्थ्याचे नाव</label>
+                    <input id="popup-name" type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition" placeholder="पूर्ण नाव">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">इयत्ता</label>
+                    <select id="popup-class" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition">
+                        <option value="">इयत्ता निवडा</option>
+                        <option>८ वी</option>
+                        <option>९ वी</option>
+                        <option>१० वी</option>
+                        <option>११ वी सायन्स</option>
+                        <option>१२ वी सायन्स</option>
+                        <option>११/१२ वी कॉमर्स/आर्ट्स</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">मोबाईल नंबर</label>
+                    <input id="popup-phone" type="tel" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition" placeholder="10 अंकी नंबर">
+                    <p id="phone-error" class="hidden text-red-500 text-xs mt-1">कृपया वैध १० अंकी मोबाईल नंबर प्रविष्ट करा.</p>
+                </div>
+                <button type="button" onclick="handleSubmit()" class="w-full blue-bg text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90 transition mt-4 flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp text-lg"></i> व्हॉट्सॲपवर पाठवा
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function togglePopup() {
+            const popup = document.getElementById('contact-popup');
+            if (popup.style.display === 'flex') {
+                popup.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            } else {
+                popup.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function handleSubmit() {
+            const name = document.getElementById('popup-name').value.trim();
+            const cls = document.getElementById('popup-class').value;
+            const phone = document.getElementById('popup-phone').value.trim();
+            const phoneError = document.getElementById('phone-error');
+
+            const digits = phone.replace(/\D/g, '');
+            if (digits.length < 10) {
+                phoneError.classList.remove('hidden');
+                document.getElementById('popup-phone').focus();
+                return;
+            }
+            phoneError.classList.add('hidden');
+
+            if (!name || !cls) return;
+
+            const msg = encodeURIComponent(`नाव: ${name}\nवर्ग: ${cls}\nफोन: ${phone}\n\nप्रवेशाबद्दल माहिती हवी आहे.`);
+            window.open(`https://wa.me/919175432344?text=${msg}`, '_blank');
+            togglePopup();
+        }
+
+        // Close popup on overlay click
+        document.getElementById('contact-popup').addEventListener('click', function(e) {
+            if (e.target === this) togglePopup();
+        });
+
+        // Show popup after 5 seconds automatically (as a CTA)
+        window.onload = function() {
+            setTimeout(() => {
+                if (!sessionStorage.getItem('popupShown')) {
+                    togglePopup();
+                    sessionStorage.setItem('popupShown', 'true');
+                }
+            }, 5000);
+        };
+    </script>
+
+</body>
+</html>
