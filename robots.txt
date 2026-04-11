@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dnyansindhu.in/sitemap.xml
