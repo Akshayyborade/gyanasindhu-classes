@@ -62,6 +62,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts preconnect for faster load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         
@@ -81,7 +84,7 @@
             background: linear-gradient(135deg, var(--brand-blue) 0%, #075985 100%);
         }
 
-        .gold-text { color: var(--brand-gold); }
+        .gold-text { color: #b45309; } /* darkened for contrast on light bg */
         .blue-bg { background-color: var(--brand-blue); }
         .gold-bg { background-color: var(--brand-gold); }
         
@@ -111,13 +114,16 @@
 </head>
 <body class="bg-slate-50">
 
+    <!-- Skip to main content (accessibility) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-sky-900 px-4 py-2 rounded z-[200]">मुख्य मजकुरावर जा</a>
+
     <!-- Navigation -->
     <nav class="sticky-nav bg-white/90 border-b border-slate-200 py-3 shadow-sm">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <!-- Logo -->
                 <div class="w-12 h-12 flex items-center justify-center">
-                    <img src="Logo.jpg" alt="ज्ञानसिंधू क्लासेस लोगो" class="w-full h-full object-contain rounded-full">
+                    <img src="Logo.jpg" alt="ज्ञानसिंधू क्लासेस लोगो" width="48" height="48" loading="lazy" class="w-full h-full object-contain rounded-full">
                 </div>
                 <div>
                     <h1 class="text-xl md:text-2xl font-bold leading-tight" style="color: var(--brand-blue);">ज्ञानसिंधू <span class="gold-text">क्लासेस</span></h1>
@@ -153,6 +159,7 @@
     </nav>
 
     <!-- Hero Section -->
+    <main id="main-content">
     <header class="gradient-bg text-white py-14 md:py-20 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
         <div class="absolute bottom-0 left-0 w-96 h-96 bg-sky-400/10 rounded-full -ml-48 -mb-48"></div>
@@ -180,7 +187,7 @@
                         <span class="text-2xl leading-none">20%</span>
                         <span class="text-sm">सूट</span>
                     </div>
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop" alt="Students" class="rounded-2xl shadow-2xl border-8 border-white/10 w-full max-w-xs md:max-w-sm object-cover h-64 md:h-[400px]">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop" alt="नेरळ कोचिंग क्लासेस विद्यार्थी" width="400" height="300" fetchpriority="high" class="rounded-2xl shadow-2xl border-8 border-white/10 w-full max-w-xs md:max-w-sm object-cover h-64 md:h-[400px]">
                 </div>
             </div>
         </div>
@@ -283,8 +290,8 @@
                                 <i class="fas fa-users"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">मर्यादित विद्यार्थी</h5>
-                                <p class="text-xs text-slate-500">प्रत्येक तुकडीत मर्यादित विद्यार्थी संख्या</p>
+                                <p class="font-bold text-sm mb-1">मर्यादित विद्यार्थी</p>
+                                <p class="text-xs text-slate-600">प्रत्येक तुकडीत मर्यादित विद्यार्थी संख्या</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -292,8 +299,8 @@
                                 <i class="fas fa-chalkboard-teacher"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">अनुभवी शिक्षक</h5>
-                                <p class="text-xs text-slate-500">प्रशिक्षित व अनुभवी शिक्षकवृंद</p>
+                                <p class="font-bold text-sm mb-1">अनुभवी शिक्षक</p>
+                                <p class="text-xs text-slate-600">प्रशिक्षित व अनुभवी शिक्षकवृंद</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -301,8 +308,8 @@
                                 <i class="fas fa-file-alt"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">प्रत्येक विषयाच्या नोट्स</h5>
-                                <p class="text-xs text-slate-500">अभ्यासपूर्ण आणि सोप्या नोट्स</p>
+                                <p class="font-bold text-sm mb-1">प्रत्येक विषयाच्या नोट्स</p>
+                                <p class="text-xs text-slate-600">अभ्यासपूर्ण आणि सोप्या नोट्स</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -310,8 +317,8 @@
                                 <i class="fas fa-user-check"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">वैयक्तिक लक्ष</h5>
-                                <p class="text-xs text-slate-500">वैयक्तिक लक्ष व योग्य मार्गदर्शन</p>
+                                <p class="font-bold text-sm mb-1">वैयक्तिक लक्ष</p>
+                                <p class="text-xs text-slate-600">वैयक्तिक लक्ष व योग्य मार्गदर्शन</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -319,8 +326,8 @@
                                 <i class="fas fa-vial"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">साप्ताहिक चाचणी</h5>
-                                <p class="text-xs text-slate-500">नियमितपणे साप्ताहिक परीक्षा</p>
+                                <p class="font-bold text-sm mb-1">साप्ताहिक चाचणी</p>
+                                <p class="text-xs text-slate-600">नियमितपणे साप्ताहिक परीक्षा</p>
                             </div>
                         </div>
                         <div class="flex gap-4">
@@ -328,8 +335,8 @@
                                 <i class="fas fa-handshake"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-sm mb-1">पालक-शिक्षक सभा</h5>
-                                <p class="text-xs text-slate-500">दर महिन्याला प्रगतीचा आढावा</p>
+                                <p class="font-bold text-sm mb-1">पालक-शिक्षक सभा</p>
+                                <p class="text-xs text-slate-600">दर महिन्याला प्रगतीचा आढावा</p>
                             </div>
                         </div>
                     </div>
@@ -341,7 +348,7 @@
                 
                 <div class="md:w-1/2">
                     <div class="bg-white p-4 rounded-3xl shadow-xl">
-                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1470&auto=format&fit=crop" alt="Learning" class="rounded-2xl w-full">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop" alt="ज्ञानसिंधू क्लासेस शिक्षण" width="600" height="400" loading="lazy" class="rounded-2xl w-full">
                     </div>
                 </div>
             </div>
@@ -370,9 +377,9 @@
                     <h4 class="text-xl font-bold mb-4">ज्ञानसिंधू <span class="gold-text">क्लासेस</span></h4>
                     <p class="text-slate-400 mb-4">नेरळ परिसरातील एक अग्रेसर शैक्षणिक संस्था, जिथे गुणवत्ता आणि विश्वासार्हता यांचा संगम होतो.</p>
                     <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-600 transition"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 transition"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Facebook" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-600 transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 transition"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
                 
@@ -403,6 +410,7 @@
             </div>
         </div>
     </footer>
+    </main>
 
     <!-- Simple Contact Form / Popup Logic -->
     <div id="contact-popup" class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4 overflow-y-auto">
