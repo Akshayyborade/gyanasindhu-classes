@@ -2782,8 +2782,7 @@
             try {
                 const response = await fetch(GOOGLE_SHEETS_CONFIG.apiUrl, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({
                         action: 'write',
                         sheetName: sheetName,
@@ -2791,10 +2790,11 @@
                     })
                 });
                 
+                // Apps Script returns text, not JSON with no-cors
                 console.log(`Synced to Google Sheets: ${sheetName}`);
             } catch (error) {
                 console.error('Google Sheets sync error:', error);
-                showToast('Failed to sync with Google Sheets. Data saved locally.', 'error');
+                // Don't show error toast - data is still saved locally
             }
         }
         
@@ -2807,7 +2807,7 @@
             try {
                 const response = await fetch(GOOGLE_SHEETS_CONFIG.apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({
                         action: 'read',
                         sheetName: sheetName
