@@ -339,6 +339,54 @@
         .hidden {
             display: none !important;
         }
+        
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #f5c518;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #gray-400;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            color: rgba(245, 197, 24, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        /* Validation Error */
+        .validation-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -443,6 +491,11 @@
     
     <!-- MODALS (will be created dynamically) -->
     <div id="modalContainer"></div>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+    </div>
 
     <script>
         // ============================================
@@ -473,6 +526,106 @@
             activities.unshift({ action, time: new Date().toISOString() });
             if (activities.length > 100) activities.pop();
             localStorage.setItem('gs_activity', JSON.stringify(activities));
+        }
+        
+        // ============================================
+        // VALIDATION FUNCTIONS
+        // ============================================
+        
+        function validatePhone(phone) {
+            const phoneRegex = /^[6-9]\d{9}$/;
+            if (!phone) return { valid: false, message: 'Phone number is required' };
+            if (!phoneRegex.test(phone)) return { valid: false, message: 'Invalid phone number. Must be 10 digits starting with 6-9' };
+            return { valid: true };
+        }
+        
+        function validateUsername(username) {
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            if (!username) return { valid: false, message: 'Username is required' };
+            if (!usernameRegex.test(username)) return { valid: false, message: 'Username must be 3-20 characters (letters, numbers, underscore only)' };
+            return { valid: true };
+        }
+        
+        function validatePassword(password) {
+            if (!password) return { valid: false, message: 'Password is required' };
+            if (password.length < 6) return { valid: false, message: 'Password must be at least 6 characters' };
+            if (!/[A-Z]/.test(password)) return { valid: false, message: 'Password must contain at least one uppercase letter' };
+            if (!/[a-z]/.test(password)) return { valid: false, message: 'Password must contain at least one lowercase letter' };
+            if (!/[0-9]/.test(password)) return { valid: false, message: 'Password must contain at least one number' };
+            return { valid: true };
+        }
+        
+        function checkDuplicateUsername(username, role, excludeId = null) {
+            const data = role === 'student' ? 
+                JSON.parse(localStorage.getItem('gs_students')) :
+                JSON.parse(localStorage.getItem('gs_teachers'));
+            return data.some(item => 
+                item.username.toLowerCase() === username.toLowerCase() && 
+                item.id !== excludeId
+            );
+        }
+        
+        function validateFees(feeAmount, feePaid) {
+            const amount = parseInt(feeAmount) || 0;
+            const paid = parseInt(feePaid) || 0;
+            
+            if (amount < 0) return { valid: false, message: 'Fee amount cannot be negative' };
+            if (paid < 0) return { valid: false, message: 'Fee paid cannot be negative' };
+            if (paid > amount) return { valid: false, message: 'Fee paid cannot exceed total fee amount' };
+            return { valid: true };
+        }
+        
+        function calculateFeeStatus(feeAmount, feePaid) {
+            const amount = parseInt(feeAmount) || 0;
+            const paid = parseInt(feePaid) || 0;
+            
+            if (paid >= amount && amount > 0) return 'paid';
+            if (paid > 0) return 'partial';
+            return 'pending';
+        }
+        
+        function checkDuplicateAttendance(date, classValue) {
+            const attendance = JSON.parse(localStorage.getItem('gs_attendance'));
+            return attendance.some(a => a.date === date && a.class === classValue);
+        }
+        
+        function checkDuplicateMarks(testName, className, subject) {
+            const marks = JSON.parse(localStorage.getItem('gs_marks'));
+            return marks.some(m => 
+                m.test.toLowerCase() === testName.toLowerCase() && 
+                m.class === className && 
+                m.subject.toLowerCase() === subject.toLowerCase()
+            );
+        }
+        
+        function showValidationError(message) {
+            showToast(message, 'error');
+        }
+        
+        // ============================================
+        // LOADING INDICATORS
+        // ============================================
+        
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+        
+        // ============================================
+        // EMPTY STATE HELPER
+        // ============================================
+        
+        function renderEmptyState(icon, message) {
+            return `
+                <div class="empty-state">
+                    <i class="fas fa-${icon}"></i>
+                    <h3 class="text-xl font-bold mb-2">No Data Found</h3>
+                    <p class="text-gray-400">${message}</p>
+                </div>
+            `;
         }
         
         // ============================================
@@ -933,6 +1086,11 @@
                 filtered = filtered.filter(s => s.feeStatus === filter.fee);
             }
             
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7">${renderEmptyState('user-graduate', 'No students found. Click "Add Student" to get started.')}</td></tr>`;
+                return;
+            }
+            
             tbody.innerHTML = filtered.map((s, i) => `
                 <tr>
                     <td>${i + 1}</td>
@@ -977,11 +1135,13 @@
                         </div>
                         <div>
                             <label>Phone *</label>
-                            <input type="tel" name="phone" required>
+                            <input type="tel" name="phone" id="studentPhone" required>
+                            <div id="phoneError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>WhatsApp</label>
-                            <input type="tel" name="whatsapp">
+                            <input type="tel" name="whatsapp" id="studentWhatsapp">
+                            <div id="whatsappError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Class *</label>
@@ -1007,11 +1167,13 @@
                         </div>
                         <div>
                             <label>Username *</label>
-                            <input type="text" name="username" required>
+                            <input type="text" name="username" id="studentUsername" required>
+                            <div id="usernameError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Password *</label>
-                            <input type="text" name="password" required>
+                            <input type="text" name="password" id="studentPassword" required>
+                            <div id="passwordError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Admission Date *</label>
@@ -1019,15 +1181,16 @@
                         </div>
                         <div>
                             <label>Fee Amount *</label>
-                            <input type="number" name="feeAmount" required>
+                            <input type="number" name="feeAmount" id="studentFeeAmount" min="0" required>
                         </div>
                         <div>
                             <label>Fee Paid</label>
-                            <input type="number" name="feePaid" value="0">
+                            <input type="number" name="feePaid" id="studentFeePaid" min="0" value="0">
+                            <div id="feeError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Fee Status</label>
-                            <select name="feeStatus">
+                            <select name="feeStatus" id="studentFeeStatus">
                                 <option value="pending">Pending</option>
                                 <option value="partial">Partial</option>
                                 <option value="paid">Paid</option>
@@ -1045,24 +1208,105 @@
                 </form>
             `);
             
+            // Add real-time fee calculation
+            const feeAmountInput = document.getElementById('studentFeeAmount');
+            const feePaidInput = document.getElementById('studentFeePaid');
+            const feeStatusSelect = document.getElementById('studentFeeStatus');
+            
+            function updateFeeStatus() {
+                const amount = parseInt(feeAmountInput.value) || 0;
+                const paid = parseInt(feePaidInput.value) || 0;
+                const feeError = document.getElementById('feeError');
+                
+                if (paid > amount) {
+                    feeError.textContent = 'Fee paid cannot exceed total fee amount';
+                    feeError.classList.remove('hidden');
+                    feePaidInput.value = amount;
+                    return;
+                }
+                feeError.classList.add('hidden');
+                feeStatusSelect.value = calculateFeeStatus(amount, paid);
+            }
+            
+            feeAmountInput.addEventListener('input', updateFeeStatus);
+            feePaidInput.addEventListener('input', updateFeeStatus);
+            
             document.getElementById('studentForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                
+                // Validate phone
+                const phone = formData.get('phone');
+                const phoneValidation = validatePhone(phone);
+                if (!phoneValidation.valid) {
+                    document.getElementById('phoneError').textContent = phoneValidation.message;
+                    document.getElementById('phoneError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate whatsapp if provided
+                const whatsapp = formData.get('whatsapp');
+                if (whatsapp) {
+                    const whatsappValidation = validatePhone(whatsapp);
+                    if (!whatsappValidation.valid) {
+                        document.getElementById('whatsappError').textContent = whatsappValidation.message;
+                        document.getElementById('whatsappError').classList.remove('hidden');
+                        return;
+                    }
+                }
+                
+                // Validate username
+                const username = formData.get('username');
+                const usernameValidation = validateUsername(username);
+                if (!usernameValidation.valid) {
+                    document.getElementById('usernameError').textContent = usernameValidation.message;
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Check duplicate username
+                if (checkDuplicateUsername(username, 'student')) {
+                    document.getElementById('usernameError').textContent = 'Username already exists';
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate password
+                const password = formData.get('password');
+                const passwordValidation = validatePassword(password);
+                if (!passwordValidation.valid) {
+                    document.getElementById('passwordError').textContent = passwordValidation.message;
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate fees
+                const feeAmount = parseInt(formData.get('feeAmount'));
+                const feePaid = parseInt(formData.get('feePaid'));
+                const feeValidation = validateFees(feeAmount, feePaid);
+                if (!feeValidation.valid) {
+                    document.getElementById('feeError').textContent = feeValidation.message;
+                    document.getElementById('feeError').classList.remove('hidden');
+                    return;
+                }
+                
+                showLoading();
+                
                 const student = {
                     id: uuid(),
-                    username: formData.get('username'),
-                    password: formData.get('password'),
+                    username: username,
+                    password: password,
                     name: formData.get('name'),
                     fatherName: formData.get('fatherName'),
-                    phone: formData.get('phone'),
-                    whatsapp: formData.get('whatsapp'),
+                    phone: phone,
+                    whatsapp: whatsapp,
                     class: formData.get('class'),
                     stream: formData.get('stream'),
                     address: formData.get('address'),
                     admDate: formData.get('admDate'),
-                    feeAmount: parseInt(formData.get('feeAmount')),
-                    feePaid: parseInt(formData.get('feePaid')),
-                    feeStatus: formData.get('feeStatus'),
+                    feeAmount: feeAmount,
+                    feePaid: feePaid,
+                    feeStatus: calculateFeeStatus(feeAmount, feePaid),
                     createdAt: new Date().toISOString()
                 };
                 
@@ -1070,6 +1314,7 @@
                 students.push(student);
                 saveStudentsData(students);
                 
+                hideLoading();
                 logActivity(`Added student: ${student.name}`);
                 showToast('Student added successfully');
                 closeModal();
@@ -1094,11 +1339,13 @@
                         </div>
                         <div>
                             <label>Phone *</label>
-                            <input type="tel" name="phone" value="${student.phone}" required>
+                            <input type="tel" name="phone" id="studentPhone" value="${student.phone}" required>
+                            <div id="phoneError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>WhatsApp</label>
-                            <input type="tel" name="whatsapp" value="${student.whatsapp || ''}">
+                            <input type="tel" name="whatsapp" id="studentWhatsapp" value="${student.whatsapp || ''}">
+                            <div id="whatsappError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Class *</label>
@@ -1123,11 +1370,13 @@
                         </div>
                         <div>
                             <label>Username *</label>
-                            <input type="text" name="username" value="${student.username}" required>
+                            <input type="text" name="username" id="studentUsername" value="${student.username}" required>
+                            <div id="usernameError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Password *</label>
-                            <input type="text" name="password" value="${student.password}" required>
+                            <input type="text" name="password" id="studentPassword" value="${student.password}" required>
+                            <div id="passwordError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Admission Date *</label>
@@ -1135,15 +1384,16 @@
                         </div>
                         <div>
                             <label>Fee Amount *</label>
-                            <input type="number" name="feeAmount" value="${student.feeAmount}" required>
+                            <input type="number" name="feeAmount" id="studentFeeAmount" min="0" value="${student.feeAmount}" required>
                         </div>
                         <div>
                             <label>Fee Paid</label>
-                            <input type="number" name="feePaid" value="${student.feePaid}">
+                            <input type="number" name="feePaid" id="studentFeePaid" min="0" value="${student.feePaid}">
+                            <div id="feeError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Fee Status</label>
-                            <select name="feeStatus">
+                            <select name="feeStatus" id="studentFeeStatus">
                                 <option value="pending" ${student.feeStatus === 'pending' ? 'selected' : ''}>Pending</option>
                                 <option value="partial" ${student.feeStatus === 'partial' ? 'selected' : ''}>Partial</option>
                                 <option value="paid" ${student.feeStatus === 'paid' ? 'selected' : ''}>Paid</option>
@@ -1161,24 +1411,105 @@
                 </form>
             `);
             
+            // Add real-time fee calculation
+            const feeAmountInput = document.getElementById('studentFeeAmount');
+            const feePaidInput = document.getElementById('studentFeePaid');
+            const feeStatusSelect = document.getElementById('studentFeeStatus');
+            
+            function updateFeeStatus() {
+                const amount = parseInt(feeAmountInput.value) || 0;
+                const paid = parseInt(feePaidInput.value) || 0;
+                const feeError = document.getElementById('feeError');
+                
+                if (paid > amount) {
+                    feeError.textContent = 'Fee paid cannot exceed total fee amount';
+                    feeError.classList.remove('hidden');
+                    feePaidInput.value = amount;
+                    return;
+                }
+                feeError.classList.add('hidden');
+                feeStatusSelect.value = calculateFeeStatus(amount, paid);
+            }
+            
+            feeAmountInput.addEventListener('input', updateFeeStatus);
+            feePaidInput.addEventListener('input', updateFeeStatus);
+            
             document.getElementById('studentForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                
+                // Validate phone
+                const phone = formData.get('phone');
+                const phoneValidation = validatePhone(phone);
+                if (!phoneValidation.valid) {
+                    document.getElementById('phoneError').textContent = phoneValidation.message;
+                    document.getElementById('phoneError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate whatsapp if provided
+                const whatsapp = formData.get('whatsapp');
+                if (whatsapp) {
+                    const whatsappValidation = validatePhone(whatsapp);
+                    if (!whatsappValidation.valid) {
+                        document.getElementById('whatsappError').textContent = whatsappValidation.message;
+                        document.getElementById('whatsappError').classList.remove('hidden');
+                        return;
+                    }
+                }
+                
+                // Validate username
+                const username = formData.get('username');
+                const usernameValidation = validateUsername(username);
+                if (!usernameValidation.valid) {
+                    document.getElementById('usernameError').textContent = usernameValidation.message;
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Check duplicate username (exclude current student)
+                if (checkDuplicateUsername(username, 'student', id)) {
+                    document.getElementById('usernameError').textContent = 'Username already exists';
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate password
+                const password = formData.get('password');
+                const passwordValidation = validatePassword(password);
+                if (!passwordValidation.valid) {
+                    document.getElementById('passwordError').textContent = passwordValidation.message;
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate fees
+                const feeAmount = parseInt(formData.get('feeAmount'));
+                const feePaid = parseInt(formData.get('feePaid'));
+                const feeValidation = validateFees(feeAmount, feePaid);
+                if (!feeValidation.valid) {
+                    document.getElementById('feeError').textContent = feeValidation.message;
+                    document.getElementById('feeError').classList.remove('hidden');
+                    return;
+                }
+                
+                showLoading();
+                
                 const updatedStudent = {
                     ...student,
-                    username: formData.get('username'),
-                    password: formData.get('password'),
+                    username: username,
+                    password: password,
                     name: formData.get('name'),
                     fatherName: formData.get('fatherName'),
-                    phone: formData.get('phone'),
-                    whatsapp: formData.get('whatsapp'),
+                    phone: phone,
+                    whatsapp: whatsapp,
                     class: formData.get('class'),
                     stream: formData.get('stream'),
                     address: formData.get('address'),
                     admDate: formData.get('admDate'),
-                    feeAmount: parseInt(formData.get('feeAmount')),
-                    feePaid: parseInt(formData.get('feePaid')),
-                    feeStatus: formData.get('feeStatus')
+                    feeAmount: feeAmount,
+                    feePaid: feePaid,
+                    feeStatus: calculateFeeStatus(feeAmount, feePaid)
                 };
                 
                 const students = JSON.parse(localStorage.getItem('gs_students'));
@@ -1186,6 +1517,7 @@
                 students[index] = updatedStudent;
                 saveStudentsData(students);
                 
+                hideLoading();
                 logActivity(`Updated student: ${updatedStudent.name}`);
                 showToast('Student updated successfully');
                 closeModal();
@@ -1281,24 +1613,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${teachers.map((t, i) => `
-                                    <tr>
-                                        <td>${i + 1}</td>
-                                        <td>${t.name}</td>
-                                        <td>${t.subject}</td>
-                                        <td>${t.phone}</td>
-                                        <td>${t.assignedClasses.join(', ')}</td>
-                                        <td>${t.username}</td>
-                                        <td>
-                                            <button onclick='editTeacher("${t.id}")' class="text-yellow-400 hover:text-yellow-300 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button onclick='deleteTeacher("${t.id}")' class="text-red-400 hover:text-red-300">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
+                                ${teachers.length === 0 ? 
+                                    `<tr><td colspan="7">${renderEmptyState('chalkboard-teacher', 'No teachers found. Click "Add Teacher" to get started.')}</td></tr>` :
+                                    teachers.map((t, i) => `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${t.name}</td>
+                                            <td>${t.subject}</td>
+                                            <td>${t.phone}</td>
+                                            <td>${t.assignedClasses.join(', ')}</td>
+                                            <td>${t.username}</td>
+                                            <td>
+                                                <button onclick='editTeacher("${t.id}")' class="text-yellow-400 hover:text-yellow-300 mr-2">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick='deleteTeacher("${t.id}")' class="text-red-400 hover:text-red-300">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -1316,7 +1651,8 @@
                         </div>
                         <div>
                             <label>Phone *</label>
-                            <input type="tel" name="phone" required>
+                            <input type="tel" name="phone" id="teacherPhone" required>
+                            <div id="phoneError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Subject *</label>
@@ -1328,11 +1664,13 @@
                         </div>
                         <div>
                             <label>Username *</label>
-                            <input type="text" name="username" required>
+                            <input type="text" name="username" id="teacherUsername" required>
+                            <div id="usernameError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Password *</label>
-                            <input type="text" name="password" required>
+                            <input type="text" name="password" id="teacherPassword" required>
+                            <div id="passwordError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Join Date *</label>
@@ -1340,7 +1678,7 @@
                         </div>
                         <div>
                             <label>Salary</label>
-                            <input type="number" name="salary">
+                            <input type="number" name="salary" min="0">
                         </div>
                     </div>
                     <div>
@@ -1361,12 +1699,49 @@
             document.getElementById('teacherForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                
+                // Validate phone
+                const phone = formData.get('phone');
+                const phoneValidation = validatePhone(phone);
+                if (!phoneValidation.valid) {
+                    document.getElementById('phoneError').textContent = phoneValidation.message;
+                    document.getElementById('phoneError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate username
+                const username = formData.get('username');
+                const usernameValidation = validateUsername(username);
+                if (!usernameValidation.valid) {
+                    document.getElementById('usernameError').textContent = usernameValidation.message;
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Check duplicate username
+                if (checkDuplicateUsername(username, 'teacher')) {
+                    document.getElementById('usernameError').textContent = 'Username already exists';
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate password
+                const password = formData.get('password');
+                const passwordValidation = validatePassword(password);
+                if (!passwordValidation.valid) {
+                    document.getElementById('passwordError').textContent = passwordValidation.message;
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    return;
+                }
+                
+                showLoading();
+                
                 const teacher = {
                     id: uuid(),
-                    username: formData.get('username'),
-                    password: formData.get('password'),
+                    username: username,
+                    password: password,
                     name: formData.get('name'),
-                    phone: formData.get('phone'),
+                    phone: phone,
                     subject: formData.get('subject'),
                     qualification: formData.get('qualification'),
                     assignedClasses: formData.get('assignedClasses').split(',').map(c => c.trim()),
@@ -1380,6 +1755,7 @@
                 teachers.push(teacher);
                 saveTeachersData(teachers);
                 
+                hideLoading();
                 logActivity(`Added teacher: ${teacher.name}`);
                 showToast('Teacher added successfully');
                 closeModal();
@@ -1400,7 +1776,8 @@
                         </div>
                         <div>
                             <label>Phone *</label>
-                            <input type="tel" name="phone" value="${teacher.phone}" required>
+                            <input type="tel" name="phone" id="teacherPhone" value="${teacher.phone}" required>
+                            <div id="phoneError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Subject *</label>
@@ -1412,11 +1789,13 @@
                         </div>
                         <div>
                             <label>Username *</label>
-                            <input type="text" name="username" value="${teacher.username}" required>
+                            <input type="text" name="username" id="teacherUsername" value="${teacher.username}" required>
+                            <div id="usernameError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Password *</label>
-                            <input type="text" name="password" value="${teacher.password}" required>
+                            <input type="text" name="password" id="teacherPassword" value="${teacher.password}" required>
+                            <div id="passwordError" class="validation-error hidden"></div>
                         </div>
                         <div>
                             <label>Join Date *</label>
@@ -1424,7 +1803,7 @@
                         </div>
                         <div>
                             <label>Salary</label>
-                            <input type="number" name="salary" value="${teacher.salary}">
+                            <input type="number" name="salary" min="0" value="${teacher.salary}">
                         </div>
                     </div>
                     <div>
@@ -1445,12 +1824,49 @@
             document.getElementById('teacherForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                
+                // Validate phone
+                const phone = formData.get('phone');
+                const phoneValidation = validatePhone(phone);
+                if (!phoneValidation.valid) {
+                    document.getElementById('phoneError').textContent = phoneValidation.message;
+                    document.getElementById('phoneError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate username
+                const username = formData.get('username');
+                const usernameValidation = validateUsername(username);
+                if (!usernameValidation.valid) {
+                    document.getElementById('usernameError').textContent = usernameValidation.message;
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Check duplicate username (exclude current teacher)
+                if (checkDuplicateUsername(username, 'teacher', id)) {
+                    document.getElementById('usernameError').textContent = 'Username already exists';
+                    document.getElementById('usernameError').classList.remove('hidden');
+                    return;
+                }
+                
+                // Validate password
+                const password = formData.get('password');
+                const passwordValidation = validatePassword(password);
+                if (!passwordValidation.valid) {
+                    document.getElementById('passwordError').textContent = passwordValidation.message;
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    return;
+                }
+                
+                showLoading();
+                
                 const updatedTeacher = {
                     ...teacher,
-                    username: formData.get('username'),
-                    password: formData.get('password'),
+                    username: username,
+                    password: password,
                     name: formData.get('name'),
-                    phone: formData.get('phone'),
+                    phone: phone,
                     subject: formData.get('subject'),
                     qualification: formData.get('qualification'),
                     assignedClasses: formData.get('assignedClasses').split(',').map(c => c.trim()),
@@ -1464,6 +1880,7 @@
                 teachers[index] = updatedTeacher;
                 saveTeachersData(teachers);
                 
+                hideLoading();
                 logActivity(`Updated teacher: ${updatedTeacher.name}`);
                 showToast('Teacher updated successfully');
                 closeModal();
@@ -1707,12 +2124,21 @@
         function saveAttendance() {
             const date = document.getElementById('attendanceDate').value;
             const selectedClass = document.getElementById('attendanceClass').value;
+            
+            // Check for duplicate attendance
+            if (checkDuplicateAttendance(date, selectedClass)) {
+                showToast('Attendance for this class on this date already exists', 'error');
+                return;
+            }
+            
             const students = JSON.parse(localStorage.getItem('gs_students')).filter(s => s.class === selectedClass);
             
             const records = students.map(s => ({
                 studentId: s.id,
                 present: document.querySelector(`input[name="attendance_${s.id}"]:checked`).value === 'present'
             }));
+            
+            showLoading();
             
             const attendance = {
                 id: uuid(),
@@ -1727,6 +2153,7 @@
             allAttendance.push(attendance);
             saveAttendanceData(allAttendance);
             
+            hideLoading();
             logActivity(`Marked attendance for class ${selectedClass} on ${date}`);
             showToast('Attendance saved successfully');
             renderAdminAttendance();
@@ -1879,12 +2306,20 @@
                 return;
             }
             
+            // Check for duplicate marks
+            if (checkDuplicateMarks(testName, selectedClass, subject)) {
+                showToast('Marks for this test, class, and subject already exist', 'error');
+                return;
+            }
+            
             const students = JSON.parse(localStorage.getItem('gs_students')).filter(s => s.class === selectedClass);
             
             const records = students.map(s => ({
                 studentId: s.id,
                 marks: parseInt(document.getElementById(`marks_${s.id}`).value) || 0
             }));
+            
+            showLoading();
             
             const marksRecord = {
                 id: uuid(),
@@ -1901,6 +2336,7 @@
             allMarks.push(marksRecord);
             saveMarksData(allMarks);
             
+            hideLoading();
             logActivity(`Added marks for ${testName} - ${subject} (Class ${selectedClass})`);
             showToast('Marks saved successfully');
             renderAdminMarks();
@@ -2808,11 +3244,11 @@
                     })
                 });
                 
-                // Apps Script returns text, not JSON with no-cors
-                console.log(`Synced to Google Sheets: ${sheetName}`);
+                console.log(`✅ Synced to Google Sheets: ${sheetName}`);
+                return { success: true };
             } catch (error) {
-                console.error('Google Sheets sync error:', error);
-                // Don't show error toast - data is still saved locally
+                console.error('❌ Google Sheets sync error:', error);
+                return { success: false, error };
             }
         }
         
