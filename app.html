@@ -834,6 +834,7 @@
                     { id: 'accounts', icon: 'users', label: 'खाती व्यवस्थापन' },
                     { id: 'attendance', icon: 'calendar-check', label: 'उपस्थिती' },
                     { id: 'marks', icon: 'chart-bar', label: 'गुण/निकाल' },
+                    { id: 'reports', icon: 'file-alt', label: 'रिपोर्ट्स' },
                     { id: 'settings', icon: 'cog', label: 'सेटिंग्ज' }
                 ];
             } else if (currentSession.role === 'teacher') {
@@ -886,6 +887,7 @@
                     case 'accounts': renderAdminAccounts(); break;
                     case 'attendance': renderAdminAttendance(); break;
                     case 'marks': renderAdminMarks(); break;
+                    case 'reports': renderAdminReports(); break;
                     case 'settings': renderAdminSettings(); break;
                 }
             } else if (currentSession.role === 'teacher') {
@@ -2377,6 +2379,590 @@
                     </table>
                 </div>
             `;
+        }
+        
+        // ============================================
+        // ADMIN: REPORTS
+        // ============================================
+        
+        function renderAdminReports() {
+            document.getElementById('pageTitle').textContent = 'Student Progress Reports';
+            
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+                <div class="glass-card p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4 gold-accent">Generate Student Reports</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Monthly Report -->
+                        <div class="glass-card p-4">
+                            <h4 class="font-bold mb-3 flex items-center">
+                                <i class="fas fa-calendar-alt gold-accent mr-2"></i>
+                                Monthly Progress Report
+                            </h4>
+                            <p class="text-sm text-gray-300 mb-4">
+                                Generate detailed monthly progress report including attendance, marks, and performance analysis.
+                            </p>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm mb-1">Select Student</label>
+                                    <select id="monthlyStudent" class="w-full">
+                                        <option value="">Select Student</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1">Select Month</label>
+                                    <input type="month" id="monthlyMonth" class="w-full">
+                                </div>
+                                <button onclick="generateMonthlyReport()" class="btn-gold w-full">
+                                    <i class="fas fa-file-pdf mr-2"></i>Generate Monthly Report
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Yearly Report -->
+                        <div class="glass-card p-4">
+                            <h4 class="font-bold mb-3 flex items-center">
+                                <i class="fas fa-calendar gold-accent mr-2"></i>
+                                Yearly Progress Report
+                            </h4>
+                            <p class="text-sm text-gray-300 mb-4">
+                                Generate comprehensive yearly report with complete academic performance and attendance summary.
+                            </p>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm mb-1">Select Student</label>
+                                    <select id="yearlyStudent" class="w-full">
+                                        <option value="">Select Student</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1">Select Year</label>
+                                    <select id="yearlyYear" class="w-full">
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026" selected>2026</option>
+                                    </select>
+                                </div>
+                                <button onclick="generateYearlyReport()" class="btn-gold w-full">
+                                    <i class="fas fa-file-pdf mr-2"></i>Generate Yearly Report
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Class Report -->
+                        <div class="glass-card p-4">
+                            <h4 class="font-bold mb-3 flex items-center">
+                                <i class="fas fa-users gold-accent mr-2"></i>
+                                Class Progress Report
+                            </h4>
+                            <p class="text-sm text-gray-300 mb-4">
+                                Generate report for entire class with comparative analysis and rankings.
+                            </p>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm mb-1">Select Class</label>
+                                    <select id="classReport" class="w-full">
+                                        <option value="">Select Class</option>
+                                        <option value="8">Class 8</option>
+                                        <option value="9">Class 9</option>
+                                        <option value="10">Class 10</option>
+                                        <option value="11-science">11 Science</option>
+                                        <option value="11-commerce">11 Commerce</option>
+                                        <option value="12-science">12 Science</option>
+                                        <option value="12-commerce">12 Commerce</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1">Select Period</label>
+                                    <input type="month" id="classReportMonth" class="w-full">
+                                </div>
+                                <button onclick="generateClassReport()" class="btn-gold w-full">
+                                    <i class="fas fa-file-pdf mr-2"></i>Generate Class Report
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Send via WhatsApp -->
+                        <div class="glass-card p-4">
+                            <h4 class="font-bold mb-3 flex items-center">
+                                <i class="fas fa-paper-plane gold-accent mr-2"></i>
+                                Send Report via WhatsApp
+                            </h4>
+                            <p class="text-sm text-gray-300 mb-4">
+                                Generate report and send directly to parent's WhatsApp number.
+                            </p>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm mb-1">Select Student</label>
+                                    <select id="whatsappStudent" class="w-full">
+                                        <option value="">Select Student</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1">Report Type</label>
+                                    <select id="whatsappReportType" class="w-full">
+                                        <option value="monthly">Monthly Report</option>
+                                        <option value="yearly">Yearly Report</option>
+                                    </select>
+                                </div>
+                                <button onclick="sendReportViaWhatsApp()" class="btn-gold w-full">
+                                    <i class="fab fa-whatsapp mr-2"></i>Send via WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Report Preview Area -->
+                <div id="reportPreview" class="glass-card p-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold gold-accent">Report Preview</h3>
+                        <div class="space-x-2">
+                            <button onclick="printReport()" class="btn-gold">
+                                <i class="fas fa-print mr-2"></i>Print
+                            </button>
+                            <button onclick="downloadReportPDF()" class="btn-gold">
+                                <i class="fas fa-download mr-2"></i>Download PDF
+                            </button>
+                            <button onclick="closeReportPreview()" class="btn-gold">
+                                <i class="fas fa-times mr-2"></i>Close
+                            </button>
+                        </div>
+                    </div>
+                    <div id="reportContent" class="bg-white text-black p-8 rounded"></div>
+                </div>
+            `;
+            
+            // Populate student dropdowns
+            const students = JSON.parse(localStorage.getItem('gs_students'));
+            const studentOptions = students.map(s => 
+                `<option value="${s.id}">${s.name} (${s.class})</option>`
+            ).join('');
+            
+            document.getElementById('monthlyStudent').innerHTML += studentOptions;
+            document.getElementById('yearlyStudent').innerHTML += studentOptions;
+            document.getElementById('whatsappStudent').innerHTML += studentOptions;
+            
+            // Set current month as default
+            const now = new Date();
+            const currentMonth = now.toISOString().slice(0, 7);
+            document.getElementById('monthlyMonth').value = currentMonth;
+            document.getElementById('classReportMonth').value = currentMonth;
+        }
+        
+        function generateMonthlyReport() {
+            const studentId = document.getElementById('monthlyStudent').value;
+            const month = document.getElementById('monthlyMonth').value;
+            
+            if (!studentId || !month) {
+                showToast('Please select student and month', 'error');
+                return;
+            }
+            
+            const student = JSON.parse(localStorage.getItem('gs_students')).find(s => s.id === studentId);
+            const [year, monthNum] = month.split('-');
+            
+            const report = generateStudentReport(student, 'monthly', { year, month: monthNum });
+            displayReport(report);
+        }
+        
+        function generateYearlyReport() {
+            const studentId = document.getElementById('yearlyStudent').value;
+            const year = document.getElementById('yearlyYear').value;
+            
+            if (!studentId) {
+                showToast('Please select student', 'error');
+                return;
+            }
+            
+            const student = JSON.parse(localStorage.getItem('gs_students')).find(s => s.id === studentId);
+            const report = generateStudentReport(student, 'yearly', { year });
+            displayReport(report);
+        }
+        
+        function generateClassReport() {
+            const classValue = document.getElementById('classReport').value;
+            const month = document.getElementById('classReportMonth').value;
+            
+            if (!classValue || !month) {
+                showToast('Please select class and period', 'error');
+                return;
+            }
+            
+            const students = JSON.parse(localStorage.getItem('gs_students')).filter(s => s.class === classValue);
+            const [year, monthNum] = month.split('-');
+            
+            const report = generateClassProgressReport(students, classValue, { year, month: monthNum });
+            displayReport(report);
+        }
+        
+        function generateStudentReport(student, type, period) {
+            const attendance = JSON.parse(localStorage.getItem('gs_attendance'));
+            const marks = JSON.parse(localStorage.getItem('gs_marks'));
+            
+            let filteredAttendance, filteredMarks;
+            
+            if (type === 'monthly') {
+                filteredAttendance = attendance.filter(a => {
+                    const aDate = new Date(a.date);
+                    return aDate.getFullYear() == period.year && 
+                           (aDate.getMonth() + 1) == period.month &&
+                           a.class === student.class;
+                });
+                
+                filteredMarks = marks.filter(m => {
+                    const mDate = new Date(m.date);
+                    return mDate.getFullYear() == period.year && 
+                           (mDate.getMonth() + 1) == period.month &&
+                           m.class === student.class;
+                });
+            } else { // yearly
+                filteredAttendance = attendance.filter(a => {
+                    const aDate = new Date(a.date);
+                    return aDate.getFullYear() == period.year && a.class === student.class;
+                });
+                
+                filteredMarks = marks.filter(m => {
+                    const mDate = new Date(m.date);
+                    return mDate.getFullYear() == period.year && m.class === student.class;
+                });
+            }
+            
+            // Calculate attendance stats
+            let totalDays = 0;
+            let presentDays = 0;
+            
+            filteredAttendance.forEach(a => {
+                const studentRecord = a.records.find(r => r.studentId === student.id);
+                if (studentRecord) {
+                    totalDays++;
+                    if (studentRecord.present) presentDays++;
+                }
+            });
+            
+            const attendancePercentage = totalDays > 0 ? ((presentDays / totalDays) * 100).toFixed(2) : 0;
+            
+            // Calculate marks stats
+            const marksData = [];
+            let totalMarks = 0;
+            let obtainedMarks = 0;
+            
+            filteredMarks.forEach(m => {
+                const studentMark = m.records.find(r => r.studentId === student.id);
+                if (studentMark) {
+                    marksData.push({
+                        test: m.test,
+                        subject: m.subject,
+                        total: m.total,
+                        obtained: studentMark.marks,
+                        percentage: ((studentMark.marks / m.total) * 100).toFixed(2)
+                    });
+                    totalMarks += m.total;
+                    obtainedMarks += studentMark.marks;
+                }
+            });
+            
+            const overallPercentage = totalMarks > 0 ? ((obtainedMarks / totalMarks) * 100).toFixed(2) : 0;
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const periodText = type === 'monthly' ? 
+                `${monthNames[period.month - 1]} ${period.year}` : 
+                `Academic Year ${period.year}`;
+            
+            return {
+                title: `${type === 'monthly' ? 'Monthly' : 'Yearly'} Progress Report`,
+                period: periodText,
+                student,
+                attendance: {
+                    total: totalDays,
+                    present: presentDays,
+                    absent: totalDays - presentDays,
+                    percentage: attendancePercentage
+                },
+                marks: marksData,
+                overall: {
+                    totalMarks,
+                    obtainedMarks,
+                    percentage: overallPercentage
+                }
+            };
+        }
+        
+        function generateClassProgressReport(students, classValue, period) {
+            const marks = JSON.parse(localStorage.getItem('gs_marks'));
+            const attendance = JSON.parse(localStorage.getItem('gs_attendance'));
+            
+            const [year, monthNum] = [period.year, period.month];
+            
+            const filteredMarks = marks.filter(m => {
+                const mDate = new Date(m.date);
+                return mDate.getFullYear() == year && 
+                       (mDate.getMonth() + 1) == monthNum &&
+                       m.class === classValue;
+            });
+            
+            const studentStats = students.map(student => {
+                let totalMarks = 0;
+                let obtainedMarks = 0;
+                
+                filteredMarks.forEach(m => {
+                    const studentMark = m.records.find(r => r.studentId === student.id);
+                    if (studentMark) {
+                        totalMarks += m.total;
+                        obtainedMarks += studentMark.marks;
+                    }
+                });
+                
+                const percentage = totalMarks > 0 ? ((obtainedMarks / totalMarks) * 100).toFixed(2) : 0;
+                
+                return {
+                    name: student.name,
+                    totalMarks,
+                    obtainedMarks,
+                    percentage
+                };
+            }).sort((a, b) => b.percentage - a.percentage);
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            return {
+                title: `Class ${classValue} Progress Report`,
+                period: `${monthNames[monthNum - 1]} ${year}`,
+                class: classValue,
+                students: studentStats,
+                totalStudents: students.length
+            };
+        }
+        
+        function displayReport(report) {
+            const preview = document.getElementById('reportPreview');
+            const content = document.getElementById('reportContent');
+            
+            if (report.students) {
+                // Class report
+                content.innerHTML = `
+                    <div class="text-center mb-6">
+                        <img src="Logo.jpg" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px;">
+                        <h1 class="text-2xl font-bold" style="color: #f5c518;">ज्ञानसिंधू क्लासेस</h1>
+                        <p class="text-sm">नेरळ</p>
+                        <h2 class="text-xl font-bold mt-4">${report.title}</h2>
+                        <p class="text-sm">${report.period}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p><strong>Total Students:</strong> ${report.totalStudents}</p>
+                    </div>
+                    
+                    <table class="w-full" style="border: 1px solid #ccc;">
+                        <thead style="background: #f5c518; color: #000;">
+                            <tr>
+                                <th style="border: 1px solid #ccc; padding: 8px;">Rank</th>
+                                <th style="border: 1px solid #ccc; padding: 8px;">Student Name</th>
+                                <th style="border: 1px solid #ccc; padding: 8px;">Total Marks</th>
+                                <th style="border: 1px solid #ccc; padding: 8px;">Obtained</th>
+                                <th style="border: 1px solid #ccc; padding: 8px;">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${report.students.map((s, i) => `
+                                <tr>
+                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${i + 1}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">${s.name}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${s.totalMarks}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${s.obtainedMarks}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${s.percentage}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="mt-6 text-sm text-center">
+                        <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                `;
+            } else {
+                // Individual student report
+                content.innerHTML = `
+                    <div class="text-center mb-6">
+                        <img src="Logo.jpg" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px;">
+                        <h1 class="text-2xl font-bold" style="color: #f5c518;">ज्ञानसिंधू क्लासेस</h1>
+                        <p class="text-sm">नेरळ</p>
+                        <h2 class="text-xl font-bold mt-4">${report.title}</h2>
+                        <p class="text-sm">${report.period}</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-2" style="color: #f5c518;">Student Information</h3>
+                        <table class="w-full">
+                            <tr>
+                                <td><strong>Name:</strong></td>
+                                <td>${report.student.name}</td>
+                                <td><strong>Class:</strong></td>
+                                <td>${report.student.class}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Father's Name:</strong></td>
+                                <td>${report.student.fatherName}</td>
+                                <td><strong>Phone:</strong></td>
+                                <td>${report.student.phone}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-2" style="color: #f5c518;">Attendance Summary</h3>
+                        <table class="w-full" style="border: 1px solid #ccc;">
+                            <tr>
+                                <td style="border: 1px solid #ccc; padding: 8px;"><strong>Total Days:</strong></td>
+                                <td style="border: 1px solid #ccc; padding: 8px;">${report.attendance.total}</td>
+                                <td style="border: 1px solid #ccc; padding: 8px;"><strong>Present:</strong></td>
+                                <td style="border: 1px solid #ccc; padding: 8px;">${report.attendance.present}</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ccc; padding: 8px;"><strong>Absent:</strong></td>
+                                <td style="border: 1px solid #ccc; padding: 8px;">${report.attendance.absent}</td>
+                                <td style="border: 1px solid #ccc; padding: 8px;"><strong>Attendance %:</strong></td>
+                                <td style="border: 1px solid #ccc; padding: 8px;"><strong>${report.attendance.percentage}%</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-2" style="color: #f5c518;">Academic Performance</h3>
+                        ${report.marks.length > 0 ? `
+                            <table class="w-full" style="border: 1px solid #ccc;">
+                                <thead style="background: #f5c518; color: #000;">
+                                    <tr>
+                                        <th style="border: 1px solid #ccc; padding: 8px;">Test/Exam</th>
+                                        <th style="border: 1px solid #ccc; padding: 8px;">Subject</th>
+                                        <th style="border: 1px solid #ccc; padding: 8px;">Total</th>
+                                        <th style="border: 1px solid #ccc; padding: 8px;">Obtained</th>
+                                        <th style="border: 1px solid #ccc; padding: 8px;">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${report.marks.map(m => `
+                                        <tr>
+                                            <td style="border: 1px solid #ccc; padding: 8px;">${m.test}</td>
+                                            <td style="border: 1px solid #ccc; padding: 8px;">${m.subject}</td>
+                                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${m.total}</td>
+                                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${m.obtained}</td>
+                                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${m.percentage}%</td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr style="background: #f5f5f5; font-weight: bold;">
+                                        <td colspan="2" style="border: 1px solid #ccc; padding: 8px;">Overall</td>
+                                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${report.overall.totalMarks}</td>
+                                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${report.overall.obtainedMarks}</td>
+                                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${report.overall.percentage}%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        ` : '<p class="text-gray-600">No marks data available for this period.</p>'}
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-2" style="color: #f5c518;">Remarks</h3>
+                        <p>${getPerformanceRemark(report.overall.percentage, report.attendance.percentage)}</p>
+                    </div>
+                    
+                    <div class="mt-8 text-sm">
+                        <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                        <p class="mt-4">______________________</p>
+                        <p>Authorized Signature</p>
+                    </div>
+                `;
+            }
+            
+            preview.classList.remove('hidden');
+            preview.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function getPerformanceRemark(academicPercentage, attendancePercentage) {
+            const academic = parseFloat(academicPercentage);
+            const attendance = parseFloat(attendancePercentage);
+            
+            if (academic >= 90 && attendance >= 90) {
+                return "Excellent performance! Keep up the great work.";
+            } else if (academic >= 75 && attendance >= 80) {
+                return "Good performance. Continue working hard.";
+            } else if (academic >= 60 && attendance >= 70) {
+                return "Satisfactory performance. There is room for improvement.";
+            } else if (attendance < 75) {
+                return "Attendance needs improvement. Regular attendance is crucial for better performance.";
+            } else {
+                return "Needs significant improvement. Extra attention and practice required.";
+            }
+        }
+        
+        function closeReportPreview() {
+            document.getElementById('reportPreview').classList.add('hidden');
+        }
+        
+        function printReport() {
+            const content = document.getElementById('reportContent').innerHTML;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Student Report</title>');
+            printWindow.document.write('<style>body{font-family: Arial, sans-serif; padding: 20px;}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(content);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function downloadReportPDF() {
+            showToast('PDF download feature requires a PDF library. Printing is available now.', 'error');
+            // In a real implementation, you would use a library like jsPDF or html2pdf.js
+            // For now, suggest using print and "Save as PDF"
+            printReport();
+        }
+        
+        function sendReportViaWhatsApp() {
+            const studentId = document.getElementById('whatsappStudent').value;
+            const reportType = document.getElementById('whatsappReportType').value;
+            
+            if (!studentId) {
+                showToast('Please select a student', 'error');
+                return;
+            }
+            
+            const student = JSON.parse(localStorage.getItem('gs_students')).find(s => s.id === studentId);
+            
+            if (!student.whatsapp && !student.phone) {
+                showToast('No WhatsApp number available for this student', 'error');
+                return;
+            }
+            
+            const phone = student.whatsapp || student.phone;
+            const now = new Date();
+            const period = reportType === 'monthly' ? 
+                { year: now.getFullYear(), month: now.getMonth() + 1 } :
+                { year: now.getFullYear() };
+            
+            const report = generateStudentReport(student, reportType, period);
+            
+            const message = `*ज्ञानसिंधू क्लासेस - ${report.title}*%0A%0A` +
+                `Student: ${student.name}%0A` +
+                `Class: ${student.class}%0A` +
+                `Period: ${report.period}%0A%0A` +
+                `*Attendance*%0A` +
+                `Present: ${report.attendance.present}/${report.attendance.total} (${report.attendance.percentage}%)%0A%0A` +
+                `*Academic Performance*%0A` +
+                `Overall: ${report.overall.obtainedMarks}/${report.overall.totalMarks} (${report.overall.percentage}%)%0A%0A` +
+                `*Remark:* ${getPerformanceRemark(report.overall.percentage, report.attendance.percentage)}%0A%0A` +
+                `For detailed report, please visit: https://akshayyborade.github.io/gyanasindhu-classes/`;
+            
+            window.open(`https://wa.me/91${phone}?text=${message}`, '_blank');
+            showToast('WhatsApp opened with report summary');
         }
         
         // ============================================
